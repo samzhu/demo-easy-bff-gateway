@@ -1,0 +1,45 @@
+spring:
+  application:
+    name: demo-easy-bff-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: false
+      routes:
+      - id: Customers
+        uri: ${customersUri}
+        predicates:
+        - Path=/api/Customers/**
+        filters:
+        - RewritePath=/api/Customers(?<segment>/?.*), /api/Customers$\{segment}
+      - id: Orders
+        uri: ${ordersUri}
+        predicates:
+        - Path=/api/Orders/**
+        filters:
+        - RewritePath=/api/Orders(?<segment>/?.*), /api/Orders$\{segment}
+      - id: Products
+        uri: ${productsUri}
+        predicates:
+        - Path=/api/Products/**
+        filters:
+        - RewritePath=/api/Products(?<segment>/?.*), /api/Products$\{segment}
+
+
+customersUri: http://172.30.136.46:8080
+ordersUri: http://172.30.136.46:8080
+productsUri: http://172.30.136.46:8080
+
+logging:
+  level:
+    root: info
+    # reactor.netty.http.server.HttpServerOperations: debug
+    # reactor.netty.http.client.HttpClientConnect: debug
+    # org.springframework.web.server.adapter.HttpWebHandlerAdapter: debug
+    # org.springframework.cloud.sleuth.instrument.web.TraceWebFilter: debug
+    # org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator: info
+    # reactor.netty.resources.PooledConnectionProvider: debug
+    # reactor.netty.channel.FluxReceive: debug
+    # reactor.netty.http.client.HttpClientOperations: debug
+    # org.springframework.cloud.sleuth.instrument.web.client.TraceResponseHttpHeadersFilter: debug
