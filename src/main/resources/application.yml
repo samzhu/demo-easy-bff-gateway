@@ -19,12 +19,12 @@ spring:
         - Path=/api/Customers/**
         filters:
         - RewritePath=/api/Customers(?<segment>/?.*), /api/Customers$\{segment}
-      - id: Orders
-        uri: ${ordersUri}
-        predicates:
-        - Path=/api/Orders/**
-        filters:
-        - RewritePath=/api/Orders(?<segment>/?.*), /api/Orders$\{segment}
+      # - id: Orders
+      #   uri: ${ordersUri}
+      #   predicates:
+      #   - Path=/api/Orders/**
+      #   filters:
+      #   - RewritePath=/api/Orders(?<segment>/?.*), /api/Orders$\{segment}
       - id: Products
         uri: ${productsUri}
         predicates:
@@ -34,7 +34,7 @@ spring:
 
 
 customersUri: http://172.30.136.46:8080
-ordersUri: http://172.30.136.46:8080
+ordersUri: http://localhost:8081
 productsUri: http://172.30.136.46:8080
 
 logging:
