@@ -4,9 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import com.example.demo.dto.Order;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,14 +22,12 @@ import org.springframework.web.reactive.function.client.WebClient;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
 @Slf4j
 @RestController
 @RequestMapping("/api/Orders")
 public class OrderController {
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Value(value = "${ordersUri}")
     private String ordersUri;
@@ -57,18 +53,25 @@ public class OrderController {
     }
 
     @PutMapping("/{orderSn}")
-    public Mono<Order> update(@PathVariable("orderSn") String orderSn, @RequestBody Order order) {
-        Mono<Order> mono = WebClient.builder().baseUrl(ordersUri).build().put()
+    public Mono<Order> update(@PathVariable("orderSn") Integer orderSn, @RequestBody Order order) {
+        Mono<Void> update = WebClient.builder().baseUrl(ordersUri).build().put()
                 .uri(uriBuilder -> uriBuilder.path("/api/Orders/{orderSn}").queryParam("api-version", "1.0")
                         .build(orderSn))
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).bodyValue(order).retrieve()
+                .bodyToMono(Void.class);
+
+        Mono<Order> getOrder = WebClient.builder().baseUrl(ordersUri).build().get()
+                .uri(uriBuilder -> uriBuilder.path("/api/Orders/{orderSn}").queryParam("api-version", "1.0")
+                        .build(orderSn))
+                .accept(MediaType.APPLICATION_JSON).retrieve()
                 .bodyToMono(Order.class);
-        return mono;
+
+        return update.then(getOrder);
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{orderSn}")
-    public Mono<Void> delete(@PathVariable("orderSn") String orderSn) {
-        log.info("orderSn={}", orderSn);
+    public Mono<Void> delete(@PathVariable("orderSn") Integer orderSn) {
         return WebClient
                 .builder().baseUrl(ordersUri).build().delete().uri(uriBuilder -> uriBuilder
                         .path("/api/Orders/{orderSn}").queryParam("api-version", "1.0").build(orderSn))
