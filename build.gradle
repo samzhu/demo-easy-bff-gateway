@@ -46,7 +46,7 @@ publishing {
     repositories {
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/cloud-technology/release-notes-generator")
+            url = uri("https://maven.pkg.github.com/samzhu/demo-easy-bff-gateway")
             credentials {
                 username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
                 password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
